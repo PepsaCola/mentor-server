@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import TransactionsPage from './pages/TransactionsPage.jsx';
 import ImportPage from './pages/ImportPage.jsx';
+import BudgetsPage from './pages/BudgetsPage.jsx';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           >
             <Route path="/" element={<DashboardPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/budgets" element={<BudgetsPage />} />
             <Route path="/import" element={<ImportPage />} />
           </Route>
         </Routes>

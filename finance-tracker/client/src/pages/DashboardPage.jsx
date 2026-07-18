@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
 import * as dashboardApi from '../api/dashboard.js';
+import * as budgetsApi from '../api/budgets.js';
 import StatCard from '../components/StatCard.jsx';
 import SpendingByCategoryChart from '../components/charts/SpendingByCategoryChart.jsx';
 import BalanceOverTimeChart from '../components/charts/BalanceOverTimeChart.jsx';
+import BudgetProgressList from '../components/BudgetProgressList.jsx';
 
 const DashboardPage = () => {
   const [range, setRange] = useState({
@@ -12,13 +14,16 @@ const DashboardPage = () => {
     to: dayjs().format('YYYY-MM-DD'),
   });
   const [summary, setSummary] = useState(null);
+  const [budgetProgress, setBudgetProgress] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    dashboardApi
-      .getSummary(range)
-      .then(setSummary)
+    Promise.all([dashboardApi.getSummary(range), budgetsApi.getBudgetProgress(dayjs().format('YYYY-MM'))])
+      .then(([summaryData, progress]) => {
+        setSummary(summaryData);
+        setBudgetProgress(progress);
+      })
       .finally(() => setIsLoading(false));
   }, [range]);
 
@@ -56,6 +61,10 @@ const DashboardPage = () => {
               <h3>Balance over time</h3>
               <BalanceOverTimeChart data={summary.balanceOverTime} />
             </div>
+          </div>
+          <div className="card">
+            <h3>This month's budgets</h3>
+            <BudgetProgressList progress={budgetProgress} />
           </div>
         </>
       )}

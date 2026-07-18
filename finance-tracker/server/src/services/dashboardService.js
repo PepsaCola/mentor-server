@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import prisma from '../lib/prisma.js';
 
 const buildDateFilter = (from, to) => {
@@ -59,4 +61,30 @@ export const getDashboardSummary = async (userId, { from, to } = {}) => {
     byCategory,
     balanceOverTime,
   };
+};
+
+export const getBudgetProgress = async (userId, month) => {
+  const targetMonth = dayjs(month && /^\d{4}-\d{2}$/.test(month) ? month : undefined);
+  const start = targetMonth.startOf('month').toDate();
+  const end = targetMonth.endOf('month').toDate();
+
+  const [budgets, spentByCategory] = await Promise.all([
+    prisma.budget.findMany({ where: { userId }, include: { category: true } }),
+    prisma.transaction.groupBy({
+      by: ['categoryId'],
+      where: { userId, type: 'EXPENSE', date: { gte: start, lte: end } },
+      _sum: { amount: true },
+    }),
+  ]);
+
+  const spentMap = new Map(spentByCategory.map((row) => [row.categoryId, Number(row._sum.amount ?? 0)]));
+
+  return budgets.map((budget) => ({
+    id: budget.id,
+    categoryId: budget.categoryId,
+    categoryName: budget.category.name,
+    color: budget.category.color,
+    amount: Number(budget.amount),
+    spent: spentMap.get(budget.categoryId) ?? 0,
+  }));
 };

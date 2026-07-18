@@ -28,13 +28,27 @@ const TransactionsPage = () => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleUpdate = async (id, data) => {
+    const updated = await transactionsApi.updateTransaction(id, data);
+    setTransactions((prev) => prev.map((t) => (t.id === id ? updated : t)));
+  };
+
   return (
     <div>
       <div className="page-header">
         <h2>Transactions</h2>
       </div>
       <TransactionForm categories={categories} onCreate={handleCreate} />
-      {isLoading ? <p className="muted">Loading...</p> : <TransactionTable transactions={transactions} onDelete={handleDelete} />}
+      {isLoading ? (
+        <p className="muted">Loading...</p>
+      ) : (
+        <TransactionTable
+          transactions={transactions}
+          categories={categories}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
+      )}
     </div>
   );
 };

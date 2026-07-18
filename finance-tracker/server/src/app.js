@@ -6,6 +6,7 @@ import categoryRouter from './routes/categoryRouter.js';
 import transactionRouter from './routes/transactionRouter.js';
 import importRouter from './routes/importRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
+import budgetRouter from './routes/budgetRouter.js';
 import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
 
@@ -23,6 +24,7 @@ app.use('/api/categories', categoryRouter);
 app.use('/api/transactions', transactionRouter);
 app.use('/api/import', importRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/budgets', budgetRouter);
 
 app.use(notFound);
 app.use(errorHandler);
